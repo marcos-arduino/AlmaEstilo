@@ -1,0 +1,232 @@
+[
+  {
+    "_id": "68ffb62cb05c741ab9be0fc0",
+    "name": "Remera Roja",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeraroja.png",
+    "stock": 20,
+    "description": "Remera de algodón color rojo, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc1",
+    "name": "Remera Amarilla",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeraamarilla.png",
+    "stock": 20,
+    "description": "Remera de algodón color amarillo, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc2",
+    "name": "Remera Verde",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeraverde.png",
+    "stock": 20,
+    "description": "Remera de algodón color verde, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc3",
+    "name": "Remera Azul",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeraazul.png",
+    "stock": 20,
+    "description": "Remera de algodón color azul, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc4",
+    "name": "Remera Marrón",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeramarron.png",
+    "stock": 20,
+    "description": "Remera de algodón color marrón, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc5",
+    "name": "Remera Blanca",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remerablanca.png",
+    "stock": 20,
+    "description": "Remera de algodón color blanco, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc6",
+    "name": "Remera Negra",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeranegra.png",
+    "stock": 20,
+    "description": "Remera de algodón color negro, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc7",
+    "name": "Remera Gris",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeragris.png",
+    "stock": 20,
+    "description": "Remera de algodón color gris, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc8",
+    "name": "Remera Violeta",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeravioleta.png",
+    "stock": 20,
+    "description": "Remera de algodón color violeta, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fc9",
+    "name": "Remera Celeste",
+    "price": 1500,
+    "category": "Remeras",
+    "image": "remeraceleste.png",
+    "stock": 20,
+    "description": "Remera de algodón color celeste, talle M",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fca",
+    "name": "Pantalón Rojo",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonrojo.png",
+    "stock": 15,
+    "description": "Pantalón color rojo, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fcb",
+    "name": "Pantalón Amarillo",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonamarillo.png",
+    "stock": 15,
+    "description": "Pantalón color amarillo, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fcc",
+    "name": "Pantalón Verde",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonverde.png",
+    "stock": 15,
+    "description": "Pantalón color verde, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fcd",
+    "name": "Pantalón Azul",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonazul.png",
+    "stock": 15,
+    "description": "Pantalón color azul, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fce",
+    "name": "Pantalón Marrón",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonmarron.png",
+    "stock": 15,
+    "description": "Pantalón color marrón, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fcf",
+    "name": "Pantalón Blanco",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonblanco.png",
+    "stock": 15,
+    "description": "Pantalón color blanco, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fd0",
+    "name": "Pantalón Negro",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonnegro.png",
+    "stock": 15,
+    "description": "Pantalón color negro, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fd1",
+    "name": "Pantalón Gris",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalongris.png",
+    "stock": 15,
+    "description": "Pantalón color gris, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fd2",
+    "name": "Pantalón Violeta",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonvioleta.png",
+    "stock": 15,
+    "description": "Pantalón color violeta, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb62cb05c741ab9be0fd3",
+    "name": "Pantalón Celeste",
+    "price": 3500,
+    "category": "Pantalones",
+    "image": "pantalonceleste.png",
+    "stock": 15,
+    "description": "Pantalón color celeste, talle 32",
+    "__v": 0
+  },
+  {
+    "_id": "68ffb7f07aa4aad7d0282237",
+    "name": "Bota negra",
+    "price": 20000,
+    "category": "Zapatos",
+    "image": "bota1.png",
+    "stock": 0,
+    "description": "Bota negra",
+    "__v": 0
+  },
+  {
+    "_id": "690d1a24d9968082d95cbf84",
+    "name": "Botas",
+    "price": 25000,
+    "category": "Zapatos",
+    "image": "bota1.png",
+    "stock": 10,
+    "description": "Botas",
+    "__v": 0
+  },
+  {
+    "_id": "690d1a5ad9968082d95cbf93",
+    "name": "Botas cuero",
+    "price": 23323,
+    "category": "Zapatos",
+    "image": "botanegra.png",
+    "stock": 10,
+    "description": "Botas cuero",
+    "__v": 0
+  }
+]
