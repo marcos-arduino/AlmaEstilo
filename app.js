@@ -8,18 +8,23 @@ require("dotenv").config();
 const { MercadoPagoConfig, Preference } = require("mercadopago");
 
 // Importar rutas
-let authRoutes, productsRoutes, categoriesRoutes, ordersRoutes, adminRoutes;
+const authRoutes = require('./src/routes/auth');
+const productsRoutes = require('./src/routes/products');
+// Las siguientes rutas pueden ser opcionales
+let categoriesRoutes, ordersRoutes, adminRoutes;
+
 try {
-  authRoutes = require('./src/routes/auth');
-  productsRoutes = require('./src/routes/products');
+  // Intentar cargar rutas opcionales
   categoriesRoutes = require('./src/routes/categories');
   ordersRoutes = require('./src/routes/orders');
   adminRoutes = require('./src/routes/adminRoutes');
-  console.log('✅ Rutas cargadas correctamente');
+  console.log('✅ Rutas adicionales cargadas correctamente');
 } catch (err) {
-  console.error('⚠️ Error al cargar rutas:', err.message);
-  console.log('⚠️ Usando modo legacy');
+  console.log('⚠️ Algunas rutas adicionales no están disponibles:', err.message);
 }
+
+// Rutas principales (siempre requeridas)
+console.log('✅ Rutas principales cargadas correctamente');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -65,20 +70,15 @@ if (authRoutes) {
   app.use('/api/auth', authRoutes);
 }
 
-// Rutas de productos (si existen)
-if (productsRoutes) {
-  app.use('/api/products', productsRoutes);
-}
+// Rutas opcionales
+if (categoriesRoutes) app.use("/api/categories", categoriesRoutes);
+if (ordersRoutes) app.use("/api/orders", ordersRoutes);
+if (adminRoutes) app.use("/api/admin", adminRoutes);
 
-// Rutas de categorías (si existen)
-if (categoriesRoutes) {
-  app.use('/api/categories', categoriesRoutes);
-}
-
-// Rutas de órdenes (si existen)
-if (ordersRoutes) {
-  app.use('/api/orders', ordersRoutes);
-}
+// Ruta de prueba
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API funcionando correctamente' });
+});
 
 // Esquema de producto antiguo (compatible con estructura actual)
 const ProductoSchema = new mongoose.Schema({

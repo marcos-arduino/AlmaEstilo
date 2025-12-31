@@ -68,7 +68,7 @@ const login = async (req, res) => {
     }
 
     // Verificar contraseña
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(400).json({ error: 'Credenciales inválidas' });
     }
