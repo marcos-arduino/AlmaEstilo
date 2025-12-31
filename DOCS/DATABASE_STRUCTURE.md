@@ -1,92 +1,304 @@
-# 📊 Estructura de Base de Datos - Almendra E-commerce
+# 📊 Estructura de Base de Datos - AlmaEstilo
 
-## 🗂️ Colecciones
+## 🗂️ Colecciones Principales
 
 ### 1. **Users** (Usuarios)
-Gestiona los usuarios del sistema con roles y autenticación.
+Gestiona los usuarios del sistema con autenticación y perfiles.
 
 ```javascript
 {
   _id: ObjectId,
-  email: String (único, requerido),
-  password: String (hasheado, requerido),
-  name: String (requerido),
-  role: String (enum: ['admin', 'user'], default: 'user'),
-  phone: String,
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String (default: 'Argentina')
+  firstName: String (requerido),
+  lastName: String (requerido),
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true, 
+    lowercase: true,
+    match: [/^\S+@\S+\.\S+$/, 'Por favor ingresa un correo válido']
   },
-  isActive: Boolean (default: true),
-  createdAt: Date,
-  updatedAt: Date
+  password: { 
+    type: String, 
+    required: [true, 'La contraseña es requerida'],
+    minlength: [8, 'La contraseña debe tener al menos 8 caracteres'],
+    select: false
+  },
+  role: { 
+    type: String, 
+    enum: ['admin', 'user', 'editor'], 
+    default: 'user' 
+  },
+  phone: {
+    type: String,
+    match: [/^[0-9\-\+\(\)\s]+$/, 'Número de teléfono inválido']
+  },
+  address: [{
+    type: {
+      street: String,
+      number: String,
+      apartment: String,
+      city: String,
+      state: String,
+      zipCode: String,
+      country: { type: String, default: 'Argentina' },
+      isDefault: { type: Boolean, default: false }
+    }
+  }],
+  wishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+  emailVerified: { type: Boolean, default: false },
+  emailVerificationToken: String,
+  isActive: { type: Boolean, default: true },
+  lastLogin: Date,
+  loginAttempts: { type: Number, default: 0 },
+  lockUntil: Date,
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 }
 ```
 
 **Características:**
-- ✅ Contraseñas hasheadas con bcrypt
-- ✅ Validación de email
-- ✅ Roles: admin y user
-- ✅ Soft delete con `isActive`
+- 🔐 Autenticación segura con JWT
+- 🔄 Verificación de correo electrónico
+- 🔑 Recuperación de contraseña
+- 👥 Múltiples roles: admin, editor, user
+- 🏠 Múltiples direcciones de envío
+- ❤️ Lista de deseos
+- 🔒 Protección contra ataques de fuerza bruta
+- 📧 Notificaciones por correo electrónico
 
 ---
 
 ### 2. **Categories** (Categorías)
-Organiza los productos en categorías.
+Organiza jerárquicamente los productos en categorías y subcategorías.
 
 ```javascript
 {
   _id: ObjectId,
-  name: String (único, requerido),
-  slug: String (único, auto-generado),
-  description: String,
-  image: String,
-  isActive: Boolean (default: true),
-  createdAt: Date,
-  updatedAt: Date
+  name: { 
+    type: String, 
+    required: [true, 'El nombre de la categoría es requerido'],
+    unique: true,
+    trim: true,
+    maxlength: [50, 'El nombre no puede exceder los 50 caracteres']
+  },
+  slug: { 
+    type: String, 
+    unique: true,
+    lowercase: true,
+    index: true
+  },
+  description: {
+    type: String,
+    maxlength: [500, 'La descripción no puede exceder los 500 caracteres']
+  },
+  parent: {
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
+    default: null
+  },
+  ancestors: [{
+    _id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category'
+    },
+    name: String,
+    slug: String
+  }],
+  image: {
+    url: String,
+    alt: String
+  },
+  featured: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true },
+  seo: {
+    title: String,
+    description: String,
+    keywords: [String]
+  },
+  sortOrder: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now }
 }
 ```
 
 **Características:**
-- ✅ Slug auto-generado desde el nombre
-- ✅ Soft delete con `isActive`
+- 🌳 Estructura jerárquica ilimitada
+- 🔗 URLs amigables con slugs únicos
+- 🖼️ Soporte para imágenes destacadas
+- 🔍 Optimización SEO
+- 🏷️ Categorías destacadas
+- 📊 Ordenamiento personalizado
+```
+
+**Características:**
 
 ---
 
 ### 3. **Products** (Productos)
-Catálogo de productos con relación a categorías.
+Catálogo completo de productos con variantes y atributos.
 
 ```javascript
 {
   _id: ObjectId,
-  name: String (requerido),
-  slug: String (único, auto-generado),
-  description: String,
-  price: Number (requerido, min: 0),
-  category: ObjectId (ref: 'Category', requerido),
-  stock: Number (default: 0, min: 0),
-  image: String (requerido),
-  images: [String],
-  sizes: [String] (enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL']),
-  colors: [String],
-  isActive: Boolean (default: true),
-  isFeatured: Boolean (default: false),
-  createdAt: Date,
-  updatedAt: Date
+  name: {
+    type: String,
+    required: [true, 'El nombre del producto es requerido'],
+    trim: true,
+    maxlength: [100, 'El nombre no puede exceder los 100 caracteres']
+  },
+  slug: {
+    type: String,
+    unique: true,
+    lowercase: true,
+    index: true
+  },
+  description: {
+    type: String,
+    required: [true, 'La descripción es requerida'],
+    maxlength: [2000, 'La descripción no puede exceder los 2000 caracteres']
+  },
+  shortDescription: {
+    type: String,
+    maxlength: [300, 'La descripción corta no puede exceder los 300 caracteres']
+  },
+  sku: {
+    type: String,
+    unique: true,
+    required: true,
+    uppercase: true
+  },
+  barcode: {
+    type: String,
+    unique: true,
+    sparse: true
+  },
+  price: {
+    base: { type: Number, required: true, min: 0 },
+    sale: { type: Number, min: 0 },
+    currency: { type: String, default: 'ARS' },
+    taxRate: { type: Number, default: 0.21 } // 21% IVA por defecto
+  },
+  cost: {
+    type: Number,
+    min: 0,
+    required: [true, 'El costo es requerido para el cálculo de márgenes']
+  },
+  stock: {
+    type: Number,
+    required: true,
+    min: 0,
+    default: 0,
+    validate: {
+      validator: Number.isInteger,
+      message: 'El stock debe ser un número entero'
+    }
+  },
+  lowStockThreshold: {
+    type: Number,
+    default: 5
+  },
+  weight: { type: Number, default: 0 }, // en gramos
+  dimensions: {
+    length: Number, // cm
+    width: Number,  // cm
+    height: Number, // cm
+  },
+  categories: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
+    required: [true, 'Al menos una categoría es requerida']
+  }],
+  brand: {
+    type: Schema.Types.ObjectId,
+    ref: 'Brand'
+  },
+  attributes: [{
+    name: { type: String, required: true },
+    value: { type: Schema.Types.Mixed, required: true },
+    displayValue: String
+  }],
+  variants: [{
+    sku: { type: String, required: true, unique: true },
+    attributes: [{
+      name: String,
+      value: String,
+      displayValue: String
+    }],
+    price: Number,
+    stock: Number,
+    images: [{
+      url: String,
+      alt: String,
+      isDefault: Boolean
+    }],
+    barcode: String,
+    weight: Number,
+    dimensions: {
+      length: Number,
+      width: Number,
+      height: Number
+    }
+  }],
+  images: [{
+    url: { type: String, required: true },
+    alt: String,
+    isDefault: { type: Boolean, default: false },
+    order: { type: Number, default: 0 }
+  }],
+  specifications: [{
+    name: { type: String, required: true },
+    value: { type: Schema.Types.Mixed, required: true },
+    group: String
+  }],
+  relatedProducts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Product'
+  }],
+  tags: [{
+    type: String,
+    lowercase: true,
+    trim: true
+  }],
+  isActive: { type: Boolean, default: true },
+  isFeatured: { type: Boolean, default: false },
+  isNew: { type: Boolean, default: true },
+  isDigital: { type: Boolean, default: false },
+  downloadUrl: String,
+  seo: {
+    title: String,
+    description: String,
+    keywords: [String],
+    canonicalUrl: String
+  },
+  rating: {
+    average: { type: Number, default: 0, min: 0, max: 5 },
+    count: { type: Number, default: 0 },
+    distribution: {
+      1: { type: Number, default: 0 },
+      2: { type: Number, default: 0 },
+      3: { type: Number, default: 0 },
+      4: { type: Number, default: 0 },
+      5: { type: Number, default: 0 }
+    }
+  },
+  viewCount: { type: Number, default: 0 },
+  salesCount: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  publishedAt: Date
 }
 ```
 
 **Características:**
-- ✅ Relación con categorías mediante ObjectId
-- ✅ Slug auto-generado
-- ✅ Múltiples imágenes, talles y colores
-- ✅ Control de stock
-- ✅ Productos destacados
-- ✅ Índices para búsqueda de texto
-- ✅ Soft delete con `isActive`
+- Relación con categorías mediante ObjectId
+- Slug auto-generado
+- Múltiples imágenes, talles y colores
+- Control de stock
+- Productos destacados
+- Índices para búsqueda de texto
+- Soft delete con `isActive`
 
 ---
 

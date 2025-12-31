@@ -1,52 +1,88 @@
-# 🛍️ Almendra E-commerce
+# 🛍️ AlmaEstilo - E-commerce
 
-E-commerce completo con backend Node.js/Express, MongoDB y autenticación JWT.
+Plataforma de comercio electrónico moderna desarrollada con Node.js, Express, MongoDB y React, diseñada para ofrecer una experiencia de compra excepcional.
 
-## ✨ Características
+## ✨ Características Principales
 
-- ✅ **Autenticación JWT** con roles (admin/user)
-- ✅ **Base de datos MongoDB** organizada y normalizada
-- ✅ **CRUD completo** de productos, categorías y órdenes
-- ✅ **Sistema de órdenes** con gestión de stock
-- ✅ **Integración Mercado Pago** para pagos
-- ✅ **Validaciones** en todos los niveles
-- ✅ **Soft delete** para mantener historial
-- ✅ **API RESTful** bien documentada
+- 🔐 **Autenticación JWT** con roles de administrador y usuario
+- 🛒 **Carrito de compras** en tiempo real
+- 📦 **Gestión de inventario** con seguimiento de stock
+- 💳 **Pagos seguros** con Mercado Pago
+- 📱 **Diseño responsive** para todos los dispositivos
+- 🔍 **Búsqueda avanzada** con filtros y ordenamiento
+- 📊 **Panel de administración** completo
+- 📦 **Sistema de órdenes** con seguimiento
+- 📝 **Reseñas y valoraciones** de productos
+- 📱 **Notificaciones** por correo electrónico
 
-## 🗂️ Estructura de Base de Datos
+## 🏗️ Estructura del Proyecto
 
 ```
-MongoDB
-├── users       # Usuarios con autenticación
-├── categories  # Categorías de productos
-├── products    # Catálogo de productos
-└── orders      # Órdenes de compra
+AlmaEstilo/
+├── client/          # Aplicación frontend React
+├── src/             # Backend Node.js/Express
+│   ├── config/      # Configuraciones
+│   ├── controllers/ # Controladores
+│   ├── middleware/  # Middlewares
+│   ├── models/      # Modelos de MongoDB
+│   ├── routes/      # Rutas de la API
+│   └── utils/       # Utilidades
+├── public/          # Archivos estáticos
+└── DOCS/            # Documentación
 ```
 
-Ver [DATABASE_STRUCTURE.md](DATABASE_STRUCTURE.md) para más detalles.
+## 🚀 Comenzando
 
-## 🚀 Inicio Rápido
+### Requisitos Previos
 
-### 1. Instalación
+- Node.js 16+
+- MongoDB 6.0+
+- npm 8+
 
-```bash
-# Clonar repositorio
-git clone <repo-url>
-cd ecommerceAlmendra
+### Instalación
 
-# Instalar dependencias
-npm install
-```
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/tu-usuario/almaestilo.git
+   cd almaestilo
+   ```
 
-### 2. Configuración
+2. Instalar dependencias del backend:
+   ```bash
+   npm install
+   ```
 
-```bash
-# Copiar archivo de ejemplo
-cp .env.example .env
+3. Instalar dependencias del frontend:
+   ```bash
+   cd client
+   npm install
+   cd ..
+   ```
 
-# Editar .env con tus credenciales
-nano .env
-```
+4. Configurar variables de entorno:
+   ```bash
+   cp .env.example .env
+   # Editar .env con tus credenciales
+   ```
+
+5. Iniciar el servidor de desarrollo:
+   ```bash
+   # En modo desarrollo (ambos servidores)
+   npm run dev
+   
+   # O por separado:
+   # Backend
+   npm run server
+   # Frontend (en otra terminal)
+   cd client && npm start
+   ```
+
+## 📚 Documentación
+
+- [API Reference](API_REFERENCE.md) - Documentación completa de la API
+- [Guía de Despliegue](DEPLOYMENT_GUIDE.md) - Cómo desplegar en producción
+- [Estructura de la Base de Datos](DATABASE_STRUCTURE.md) - Esquema y relaciones
+- [Guía de Estilo](STYLE_GUIDE.md) - Convenciones de código y mejores prácticas
 
 Variables requeridas:
 ```env
