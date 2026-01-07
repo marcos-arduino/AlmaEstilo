@@ -4,23 +4,24 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
 const fsSync = require("fs");
+const multer = require("multer");
 require("dotenv").config();
 const { MercadoPagoConfig, Preference } = require("mercadopago");
+const { protect, admin } = require('./src/middleware/auth');
 
 // Importar rutas
 const authRoutes = require('./src/routes/auth');
 const productsRoutes = require('./src/routes/products');
 // Las siguientes rutas pueden ser opcionales
-let categoriesRoutes, ordersRoutes, adminRoutes;
+let ordersRoutes, adminRoutes;
 
 try {
   // Intentar cargar rutas opcionales
-  categoriesRoutes = require('./src/routes/categories');
   ordersRoutes = require('./src/routes/orders');
   adminRoutes = require('./src/routes/adminRoutes');
   console.log('✅ Rutas adicionales cargadas correctamente');
 } catch (err) {
-  console.log('⚠️ Algunas rutas adicionales no están disponibles:', err.message);
+  console.warn('⚠ Algunas rutas opcionales no están disponibles:', err.message);
 }
 
 // Rutas principales (siempre requeridas)
@@ -49,6 +50,21 @@ mongoose
   .connect(mongoUrl)
   .then(() => {
     console.log("✅ Conectado a MongoDB");
+    // Inicializar categorías por defecto si no existen
+    Category.countDocuments()
+      .then(async (count) => {
+        if (count === 0) {
+          await Category.insertMany([
+            { name: 'Remeras', description: 'Remeras', isActive: true },
+            { name: 'Pantalones', description: 'Pantalones', isActive: true },
+            { name: 'Zapatos', description: 'Zapatos', isActive: true },
+          ]);
+          console.log('✅ Categorías por defecto creadas');
+        }
+      })
+      .catch((err) => {
+        console.warn('⚠ No se pudieron inicializar categorías:', err?.message || err);
+      });
   })
   .catch((err) => {
     console.error("❌ Error al conectar con MongoDB:", err);
@@ -69,15 +85,55 @@ const mpClient = new MercadoPagoConfig({
 if (authRoutes) {
   app.use('/api/auth', authRoutes);
 }
+app.use('/api/products', productsRoutes);
 
 // Rutas opcionales
-if (categoriesRoutes) app.use("/api/categories", categoriesRoutes);
 if (ordersRoutes) app.use("/api/orders", ordersRoutes);
 if (adminRoutes) app.use("/api/admin", adminRoutes);
 
 // Ruta de prueba
 app.get('/api/test', (req, res) => {
   res.json({ message: 'API funcionando correctamente' });
+});
+
+// Subida de imágenes (Multer)
+const uploadDir = path.resolve(__dirname, 'public', 'img');
+if (!fsSync.existsSync(uploadDir)) {
+  fsSync.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || '.png';
+    cb(null, `product-${unique}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype && file.mimetype.startsWith('image/')) return cb(null, true);
+    return cb(new Error('Solo se permiten imágenes'));
+  }
+});
+
+// Endpoint de subida de imagen
+app.post('/api/upload', protect, admin, upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se envió archivo' });
+    }
+    const imageUrl = `/img/${req.file.filename}`;
+    return res.json({ imageUrl });
+  } catch (err) {
+    console.error('/api/upload error:', err);
+    return res.status(500).json({ error: 'Error al subir la imagen' });
+  }
 });
 
 // Esquema de producto antiguo (compatible con estructura actual)

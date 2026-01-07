@@ -1,13 +1,11 @@
 // src/controllers/productController.js
 const Product = require('../models/Product');
-const Category = require('../models/Category');
 const { validationResult } = require('express-validator');
 
 // Obtener todos los productos
 const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({ isActive: true })
-      .populate('category', 'name slug');
+    const products = await Product.find({ isActive: true });
     res.json({ products });
   } catch (error) {
     console.error('Error al obtener productos:', error);
@@ -18,8 +16,7 @@ const getProducts = async (req, res) => {
 // Obtener producto por ID
 const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id)
-      .populate('category', 'name slug');
+    const product = await Product.findById(req.params.id);
     
     if (!product) {
       return res.status(404).json({ error: 'Producto no encontrado' });
@@ -40,26 +37,19 @@ const createProduct = async (req, res) => {
   }
 
   try {
-    const { name, price, description, category, image, stock } = req.body;
+    const { name, price, description, image, stock } = req.body;
     
-    // Verificar si la categoría existe
-    const categoryExists = await Category.findById(category);
-    if (!categoryExists) {
-      return res.status(400).json({ error: 'Categoría no válida' });
-    }
-
-    const product = new Product({
+    const newProduct = new Product({
       name,
       price,
       description,
-      category,
       image,
       stock: stock || 0,
       isActive: true
     });
 
-    await product.save();
-    res.status(201).json(product);
+    await newProduct.save();
+    res.status(201).json(newProduct);
   } catch (error) {
     console.error('Error al crear producto:', error);
     res.status(500).json({ error: 'Error al crear el producto' });
@@ -69,7 +59,7 @@ const createProduct = async (req, res) => {
 // Actualizar producto (solo admin)
 const updateProduct = async (req, res) => {
   try {
-    const { name, price, description, category, image, stock, isActive } = req.body;
+    const { name, price, description, image, stock, isActive } = req.body;
     const product = await Product.findById(req.params.id);
 
     if (!product) {
@@ -80,13 +70,6 @@ const updateProduct = async (req, res) => {
     if (name) product.name = name;
     if (price) product.price = price;
     if (description) product.description = description;
-    if (category) {
-      const categoryExists = await Category.findById(category);
-      if (!categoryExists) {
-        return res.status(400).json({ error: 'Categoría no válida' });
-      }
-      product.category = category;
-    }
     if (image) product.image = image;
     if (stock !== undefined) product.stock = stock;
     if (isActive !== undefined) product.isActive = isActive;

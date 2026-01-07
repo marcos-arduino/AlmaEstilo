@@ -9,18 +9,13 @@ const productSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, 'La descripción es requerida'],
-    trim: true
+    trim: true,
+    default: ''
   },
   price: {
     type: Number,
     required: [true, 'El precio es requerido'],
     min: [0, 'El precio no puede ser negativo']
-  },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: [true, 'La categoría es requerida']
   },
   stock: {
     type: Number,
@@ -29,9 +24,11 @@ const productSchema = new mongoose.Schema({
     default: 0
   },
   images: [{
-    type: String,
-    required: [true, 'Al menos una imagen es requerida']
+    type: String
   }],
+  image: {
+    type: String
+  },
   isActive: {
     type: Boolean,
     default: true

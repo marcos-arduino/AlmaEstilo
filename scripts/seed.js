@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const { User, Category, Product } = require('../models');
+const { User, Product } = require('../models');
 
 async function seed() {
   try {
@@ -13,101 +13,61 @@ async function seed() {
     // Limpiar base de datos
     console.log('🗑️  Limpiando base de datos...');
     await User.deleteMany({});
-    await Category.deleteMany({});
     await Product.deleteMany({});
     console.log('✅ Base de datos limpia\n');
 
-    // Crear categorías
-    console.log('📁 Creando categorías...');
-    const categories = await Category.insertMany([
-      {
-        name: 'Remeras',
-        description: 'Remeras de algodón de alta calidad',
-        isActive: true
-      },
-      {
-        name: 'Pantalones',
-        description: 'Pantalones cómodos y modernos',
-        isActive: true
-      },
-      {
-        name: 'Zapatos',
-        description: 'Calzado de primera calidad',
-        isActive: true
-      }
-    ]);
-    console.log(`✅ ${categories.length} categorías creadas\n`);
-
     // Crear productos de ejemplo
     console.log('📦 Creando productos...');
-    const remerasCategory = categories.find(c => c.name === 'Remeras');
-    const pantalonesCategory = categories.find(c => c.name === 'Pantalones');
-    const zapatosCategory = categories.find(c => c.name === 'Zapatos');
-
     const products = await Product.insertMany([
-      // Remeras
       {
         name: 'Remera Roja',
         description: 'Remera de algodón color rojo, talle M',
         price: 1500,
-        category: remerasCategory._id,
         stock: 20,
         image: 'remeraroja.png',
         sizes: ['S', 'M', 'L', 'XL'],
-        colors: ['Rojo'],
         isActive: true
       },
       {
         name: 'Remera Amarilla',
         description: 'Remera de algodón color amarillo, talle M',
         price: 1500,
-        category: remerasCategory._id,
         stock: 20,
         image: 'remeraamarilla.png',
         sizes: ['S', 'M', 'L', 'XL'],
-        colors: ['Amarillo'],
         isActive: true
       },
       {
         name: 'Remera Verde',
         description: 'Remera de algodón color verde, talle M',
         price: 1500,
-        category: remerasCategory._id,
-        stock: 20,
+        stock: 15,
         image: 'remeraverde.png',
         sizes: ['S', 'M', 'L', 'XL'],
-        colors: ['Verde'],
-        isActive: true
-      },
-      // Pantalones
-      {
-        name: 'Pantalón Rojo',
-        description: 'Pantalón color rojo, talle 32',
-        price: 3500,
-        category: pantalonesCategory._id,
-        stock: 15,
-        image: 'pantalonrojo.png',
-        sizes: ['30', '32', '34', '36'],
-        colors: ['Rojo'],
         isActive: true
       },
       {
-        name: 'Pantalón Azul',
-        description: 'Pantalón color azul, talle 32',
+        name: 'Pantalón Negro',
+        description: 'Pantalón de vestir color negro, talle 42',
         price: 3500,
-        category: pantalonesCategory._id,
-        stock: 15,
-        image: 'pantalonazul.png',
-        sizes: ['30', '32', '34', '36'],
-        colors: ['Azul'],
+        stock: 10,
+        image: 'pantalonnegro.png',
+        sizes: ['38', '40', '42', '44'],
         isActive: true
       },
-      // Zapatos
+      {
+        name: 'Zapatos Negros',
+        description: 'Zapatos formales color negro, talle 42',
+        price: 4500,
+        stock: 5,
+        image: 'zapatosnegros.png',
+        sizes: ['39', '40', '41', '42'],
+        isActive: true
+      },
       {
         name: 'Bota Negra',
         description: 'Bota de cuero negra, alta calidad',
         price: 20000,
-        category: zapatosCategory._id,
         stock: 10,
         image: 'bota1.png',
         sizes: ['38', '39', '40', '41', '42', '43'],
@@ -149,7 +109,6 @@ async function seed() {
 
     console.log('✅ ¡Seed completado exitosamente!\n');
     console.log('📊 Datos creados:');
-    console.log(`   - Categorías: ${categories.length}`);
     console.log(`   - Productos: ${products.length}`);
     console.log(`   - Usuarios: ${users.length}\n`);
     console.log('🔑 Credenciales de acceso:');

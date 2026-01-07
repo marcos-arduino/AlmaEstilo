@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const { User, Category, Product, Order } = require('../models');
+const { User, Product, Order } = require('../models');
 
 async function verifyDatabase() {
   try {
@@ -20,13 +20,11 @@ async function verifyDatabase() {
 
     // Contar documentos
     const userCount = await User.countDocuments();
-    const categoryCount = await Category.countDocuments();
     const productCount = await Product.countDocuments();
     const orderCount = await Order.countDocuments();
 
     console.log('📊 Estadísticas:');
     console.log(`   👥 Usuarios: ${userCount}`);
-    console.log(`   📁 Categorías: ${categoryCount}`);
     console.log(`   📦 Productos: ${productCount}`);
     console.log(`   🛒 Órdenes: ${orderCount}`);
     console.log('');
@@ -39,17 +37,6 @@ async function verifyDatabase() {
         const roleIcon = user.role === 'admin' ? '👑' : '👤';
         const statusIcon = user.isActive ? '✅' : '❌';
         console.log(`   ${roleIcon} ${user.email} (${user.name}) - ${user.role} ${statusIcon}`);
-      });
-      console.log('');
-    }
-
-    // Verificar categorías
-    if (categoryCount > 0) {
-      console.log('📁 Categorías:');
-      const categories = await Category.find().select('name slug isActive');
-      categories.forEach(cat => {
-        const statusIcon = cat.isActive ? '✅' : '❌';
-        console.log(`   ${statusIcon} ${cat.name} (${cat.slug})`);
       });
       console.log('');
     }
@@ -106,13 +93,6 @@ async function verifyDatabase() {
     // Verificar integridad de relaciones
     console.log('🔗 Verificando integridad de relaciones...');
     
-    const productsWithoutCategory = await Product.countDocuments({ category: null });
-    if (productsWithoutCategory > 0) {
-      console.log(`   ⚠️  ${productsWithoutCategory} productos sin categoría`);
-    } else {
-      console.log('   ✅ Todos los productos tienen categoría');
-    }
-
     const ordersWithoutUser = await Order.countDocuments({ user: null });
     if (ordersWithoutUser > 0) {
       console.log(`   ⚠️  ${ordersWithoutUser} órdenes sin usuario`);
@@ -127,9 +107,8 @@ async function verifyDatabase() {
     console.log('💚 Estado de la Base de Datos:');
     const health = {
       users: userCount > 0,
-      categories: categoryCount > 0,
       products: productCount > 0,
-      integrity: productsWithoutCategory === 0 && ordersWithoutUser === 0
+      integrity: ordersWithoutUser === 0
     };
 
     if (Object.values(health).every(v => v)) {
@@ -137,7 +116,6 @@ async function verifyDatabase() {
     } else {
       console.log('   ⚠️  Hay algunos problemas que resolver');
       if (!health.users) console.log('      - No hay usuarios creados');
-      if (!health.categories) console.log('      - No hay categorías creadas');
       if (!health.products) console.log('      - No hay productos creados');
       if (!health.integrity) console.log('      - Hay problemas de integridad referencial');
     }

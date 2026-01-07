@@ -16,32 +16,52 @@ const generateToken = (user) => {
 const register = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ 
+      success: false,
+      errors: errors.array() 
+    });
   }
 
   const { email, password, name } = req.body;
+
+  // Validación adicional
+  if (!email || !password || !name) {
+    return res.status(400).json({
+      success: false,
+      error: 'Por favor proporcione todos los campos requeridos'
+    });
+  }
 
   try {
     // Verificar si el usuario ya existe
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ error: 'El usuario ya existe' });
+      return res.status(400).json({ 
+        success: false,
+        error: 'El correo electrónico ya está en uso' 
+      });
     }
 
     // Crear nuevo usuario
     user = new User({
-      name,
-      email,
-      password,
-      role: 'user' // Por defecto, los nuevos usuarios son 'user'
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password: password,
+      role: 'user'
     });
 
-    // Encriptar contraseña
+    // Guardar usuario (el pre-save se encargará de hashear la contraseña)
     await user.save();
 
-    // Crear y devolver el token
+    // Eliminar la contraseña de la respuesta
+    user.password = undefined;
+
+    // Crear token
     const token = generateToken(user);
+    
     res.status(201).json({ 
+      success: true,
+      message: 'Usuario registrado exitosamente',
       token,
       user: {
         id: user._id,
@@ -52,7 +72,28 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.error('Error en registro:', error);
-    res.status(500).json({ error: 'Error en el servidor' });
+    
+    // Manejar errores de validación de Mongoose
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(val => val.message);
+      return res.status(400).json({
+        success: false,
+        error: messages.join(', ')
+      });
+    }
+
+    // Error de duplicado de email
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        error: 'El correo electrónico ya está en uso'
+      });
+    }
+
+    res.status(500).json({ 
+      success: false,
+      error: 'Error al registrar el usuario' 
+    });
   }
 };
 
@@ -60,22 +101,44 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
+  // Validación básica
+  if (!email || !password) {
+    return res.status(400).json({ 
+      success: false,
+      error: 'Por favor, proporcione email y contraseña' 
+    });
+  }
+
   try {
-    // Verificar si el usuario existe
-    const user = await User.findOne({ email });
+    // Buscar usuario incluyendo el campo password que normalmente está excluido
+    const user = await User.findOne({ email }).select('+password');
+    
     if (!user) {
-      return res.status(400).json({ error: 'Credenciales inválidas' });
+      console.log(`Intento de inicio de sesión fallido para el email: ${email}`);
+      return res.status(401).json({ 
+        success: false,
+        error: 'Credenciales inválidas' 
+      });
     }
 
     // Verificar contraseña
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.status(400).json({ error: 'Credenciales inválidas' });
+      console.log(`Contraseña incorrecta para el usuario: ${email}`);
+      return res.status(401).json({ 
+        success: false,
+        error: 'Credenciales inválidas' 
+      });
     }
 
-    // Crear y devolver el token
+    // Crear token
     const token = generateToken(user);
-    res.json({ 
+    
+    // Eliminar la contraseña de la respuesta
+    user.password = undefined;
+
+    res.status(200).json({ 
+      success: true,
       token,
       user: {
         id: user._id,
@@ -86,7 +149,10 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error('Error en inicio de sesión:', error);
-    res.status(500).json({ error: 'Error en el servidor' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Error en el servidor al procesar la solicitud' 
+    });
   }
 };
 

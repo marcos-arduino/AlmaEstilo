@@ -24,9 +24,8 @@ router.post(
     protect,
     admin,
     [
-      check('name', 'El nombre es obligatorio').not().isEmpty(),
-      check('price', 'El precio es obligatorio').isNumeric(),
-      check('category', 'La categoría es obligatoria').not().isEmpty()
+      check('name', 'El nombre es requerido').not().isEmpty(),
+      check('price', 'El precio es requerido').isNumeric()
     ]
   ],
   createProduct
@@ -38,9 +37,8 @@ router.put(
     protect,
     admin,
     [
-      check('name', 'El nombre es obligatorio').not().isEmpty(),
-      check('price', 'El precio es obligatorio').isNumeric(),
-      check('category', 'La categoría es obligatoria').not().isEmpty()
+      check('name', 'El nombre es requerido').not().isEmpty(),
+      check('price', 'El precio es obligatorio').isNumeric()
     ]
   ],
   updateProduct

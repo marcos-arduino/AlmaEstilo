@@ -5,6 +5,7 @@ import './language-selector.css';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import './i18n';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 // Configurar baseURL de axios con normalización para evitar URLs inválidas como ":5000"
 (function configureAxiosBaseURL() {
@@ -52,7 +53,7 @@ function App() {
   }, [users]);
 
   const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', category: '', image: '' });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', image: '' });
   const [cart, setCart] = useState([]);
 
   useEffect(() => {
@@ -64,13 +65,6 @@ function App() {
       .catch(err => console.error('Error al cargar productos:', err?.message || err));
   }, []);
 
-  // Extraer categorías (ahora pueden ser objetos o strings)
-  const categories = [...new Set(products.map(p => {
-    if (typeof p.category === 'object' && p.category?.name) {
-      return p.category.name;
-    }
-    return p.category;
-  }).filter(Boolean))];
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -242,7 +236,7 @@ function App() {
 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
-    if (!newProduct.name || !newProduct.price || !newProduct.category || !newProduct.image) {
+    if (!newProduct.name || !newProduct.price || !newProduct.image) {
       alert(t('completeAllFields'));
       return;
     }
@@ -251,24 +245,16 @@ function App() {
       const token = localStorage.getItem('token');
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       
-      // Buscar el ID de la categoría por nombre
-      const categoriesResponse = await axios.get('/api/categories');
-      const categoryObj = categoriesResponse.data.find(c => c.name === newProduct.category);
-      
-      if (!categoryObj) {
-        alert(t('error') + ': ' + t('category'));
-        return;
-      }
-      
       const productData = {
-        ...newProduct,
-        category: categoryObj._id, // Usar el ID de la categoría
-        stock: 10 // Stock por defecto
+        name: newProduct.name,
+        price: newProduct.price,
+        image: newProduct.image,
+        stock: 10
       };
       
       const response = await axios.post('/api/products', productData, { headers });
       setProducts([...products, response.data]);
-      setNewProduct({ name: '', price: '', category: '', image: '' });
+      setNewProduct({ name: '', price: '', image: '' });
       alert(t('productAddedSuccessfully'));
     } catch (err) {
       console.error('Error al subir producto:', err);
@@ -333,6 +319,9 @@ function App() {
               <nav className="nav">
                 <button className={`nav-link ${page==='catalog' ? 'active' : ''}`} onClick={() => setPage('catalog')}>{t('catalog')}</button>
                 <button className={`nav-link ${page==='cart' ? 'active' : ''}`} onClick={() => setPage('cart')}>{t('cart')} ({cart.reduce((sum,item)=>sum+item.qty,0)})</button>
+                {userRole === 'admin' && (
+                  <button className={`nav-link ${page==='admin' ? 'active' : ''}`} onClick={() => setPage('admin')}>Admin</button>
+                )}
                 <div className="language-selector-header">
                   <button onClick={() => changeLanguage('es')} className={i18n.language === 'es' ? 'active' : ''}>ES</button>
                   <button onClick={() => changeLanguage('en')} className={i18n.language === 'en' ? 'active' : ''}>EN</button>
@@ -374,58 +363,20 @@ function App() {
             </section>
           )}
 
-          {page === 'catalog' && userRole === 'admin' && (
+          {page === 'admin' && userRole === 'admin' && (
             <section className="admin-panel">
-              <h2>{t('addNewProduct')}</h2>
-              <form onSubmit={handleProductSubmit}>
-                <input
-                  placeholder={t('name')}
-                  value={newProduct.name}
-                  onChange={e => setNewProduct({ ...newProduct, name: e.target.value })}
-                />
-                <input
-                  placeholder={t('price')}
-                  type="number"
-                  value={newProduct.price}
-                  onChange={e => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) })}
-                />
-                <select
-                  value={newProduct.category}
-                  onChange={e => setNewProduct({ ...newProduct, category: e.target.value })}
-                  required
-                >
-                  <option value="">{t('selectCategory')}</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-                <input
-                  placeholder={t('imageName')}
-                  value={newProduct.image}
-                  onChange={e => setNewProduct({ ...newProduct, image: e.target.value })}
-                />
-                <button className="btn" type="submit">{t('upload')}</button>
-              </form>
+              <AdminDashboard />
             </section>
           )}
 
           {page === 'catalog' && (
             <>
-              
               <main className="catalog" id="catalogo">
-                {categories.length === 0 && (
+                {products.length === 0 && (
                   <p className="empty">No hay productos disponibles.</p>
                 )}
-                {categories.sort().map(category => (
-                  <div key={category}>
-                    <h2 className="category-title">{category}</h2>
-                    <div className="product-list">
-                      {products.filter(p => {
-                        const prodCategory = typeof p.category === 'object' && p.category?.name 
-                          ? p.category.name 
-                          : p.category;
-                        return prodCategory === category;
-                      }).map(product => (
+                <div className="product-list">
+                  {products.map(product => (
                         <div className="product-card" key={product._id}>
                           <div className="product-media">
                             <img src={getImageSrc(product.image)} alt={product.name} className="product-image" loading='lazy' />
@@ -436,10 +387,8 @@ function App() {
                             <button className="btn" onClick={() => addToCart(product)}>Agregar al carrito</button>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </main>
             </>
           )}

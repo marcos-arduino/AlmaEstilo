@@ -37,17 +37,30 @@ userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) return next();
   
   try {
+    if (!this.password) {
+      throw new Error('No se proporcionó contraseña');
+    }
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
+    console.error('Error al hashear la contraseña:', error);
     next(error);
   }
 });
 
 // Método para comparar contraseñas
 userSchema.methods.matchPassword = async function(enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
+  try {
+    if (!enteredPassword || !this.password) {
+      console.error('Contraseña faltante en la comparación');
+      return false;
+    }
+    return await bcrypt.compare(enteredPassword, this.password);
+  } catch (error) {
+    console.error('Error al comparar contraseñas:', error);
+    return false;
+  }
 };
 
 module.exports = mongoose.model('User', userSchema);
